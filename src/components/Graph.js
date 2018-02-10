@@ -4,7 +4,7 @@ import ReactFauxDOM from 'react-faux-dom';
 import * as d3sankey from 'd3-sankey';
 
 class Graph extends Component {
-  // props: height, width, data
+  // props: height, width, data, onFocusNodeChange
 
   // sankey plotting code from: https://bl.ocks.org/mbostock/ca9a0bb7ba204d12974bca90acc507c0
   drawChart() {
@@ -64,7 +64,8 @@ class Graph extends Component {
         .attr("height", function(d) { return d.y1 - d.y0; })
         .attr("width", function(d) { return d.x1 - d.x0; })
         .attr("fill", function(d) { return color(d.id.replace(/ .*/, "")); })
-        .attr("stroke", "#000");
+        .attr("stroke", "#000")
+        .on("click", function(d) { this.props.onFocusNodeChange(d.id); }.bind(this));
 
     node.append("text")
         .attr("x", function(d) { return d.x0 - 6; })
