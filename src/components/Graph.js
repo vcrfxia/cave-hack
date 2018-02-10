@@ -3,8 +3,25 @@ import * as d3 from 'd3';
 import ReactFauxDOM from 'react-faux-dom';
 import * as d3sankey from 'd3-sankey';
 
+const TYPE_COLORS = {
+  'Manuf': '#F0F',
+  'Trans': '#00F',
+  'Retail': '#0F0',
+  'Dist': '#FF0'
+};
+var ORDINAL_COLORS = d3.scaleOrdinal(d3.schemeCategory10);
+
 class Graph extends Component {
   // props: height, width, data, onFocusNodeChange
+
+  _getColorForNode(nodeName) {
+    const nodeType = nodeName.substring(0, nodeName.indexOf('_'));
+    if (nodeType === 'Part') {
+      return ORDINAL_COLORS(nodeName);
+    } else {
+      return TYPE_COLORS[nodeType];
+    }
+  }
 
   // sankey plotting code from: https://bl.ocks.org/mbostock/ca9a0bb7ba204d12974bca90acc507c0
   drawChart() {
@@ -22,8 +39,7 @@ class Graph extends Component {
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     var formatNumber = d3.format(",.0f"),
-        format = function(d) { return formatNumber(d) + " TWh"; },
-        color = d3.scaleOrdinal(d3.schemeCategory10);
+        format = function(d) { return formatNumber(d) + " TWh"; };
 
     var sankey = d3sankey.sankey()
         .nodeWidth(15)
@@ -33,7 +49,6 @@ class Graph extends Component {
     var link = svg.append("g")
         .attr("class", "links")
         .attr("fill", "none")
-        .attr("stroke", "#000")
         .attr("stroke-opacity", 0.2)
       .selectAll("path");
 
@@ -49,6 +64,7 @@ class Graph extends Component {
       .data(this.props.data.links)
       .enter().append("path")
         .attr("d", d3sankey.sankeyLinkHorizontal())
+        .attr("stroke", function(d) { return this._getColorForNode(d.source.id); }.bind(this))
         .attr("stroke-width", function(d) { return Math.max(1, d.width); });
 
     link.append("title")
@@ -63,7 +79,7 @@ class Graph extends Component {
         .attr("y", function(d) { return d.y0; })
         .attr("height", function(d) { return d.y1 - d.y0; })
         .attr("width", function(d) { return d.x1 - d.x0; })
-        .attr("fill", function(d) { return color(d.id.replace(/ .*/, "")); })
+        .attr("fill", function(d) { return this._getColorForNode(d.id); }.bind(this))
         .attr("stroke", "#000")
         .on("click", function(d) { this.props.onFocusNodeChange(d.id); }.bind(this));
 
