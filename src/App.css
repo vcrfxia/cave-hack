@@ -30,15 +30,14 @@
   flex-grow: 1;
 }
 
-.nav-buttons {
+.nav-buttons, .option-buttons {
   padding: 10px;
   max-width: 50%;
+  display: inline-block;
 }
 
 .option-buttons {
-  padding: 10px;
   float: right;
-  max-width: 50%;
 }
 
 @keyframes App-logo-spin {
