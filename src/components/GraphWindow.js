@@ -3,22 +3,39 @@ import React, { Component } from 'react';
 import Graph from './Graph';
 
 class GraphWindow extends Component {
-  constructor(props) {   // width, height
+  constructor(props) {   // width, height, dataName (string: cereal/perfume/aircraft), onHomeClicked
     super(props);
     this.state = {
-      dataName: 'cereal',
       focusNode: ''   // name of node to focus graph on; empty if none
     };
     // contains nodes (array of names), links (array of objects (source: name, target: name, value: double))
-    this.allData = require('../data/' + this.state.dataName + '.json');
+    this.allData = {};
+    this.allNodes = [];  // array of strings
+    this.allNodesSet = new Set();   // set version of the above
+    this.forwardNodes = {};   // maps string to array of strings
+    this.backwardNodes = {};
+
+    this.data = {};   // data currently passed to Graph
+  }
+
+  _fetchData(dataName) {
+    this.allData = require('../data/' + dataName + '.json');
     this.allNodes = this.allData.nodes.map((val) => val['id']);
     this.allNodesSet = new Set(this.allNodes);
-    this.forwardNodes = require('../data/' + this.state.dataName + '_forward_nodes.json');
-    this.backwardNodes = require('../data/' + this.state.dataName + '_backward_nodes.json');
+    this.forwardNodes = require('../data/' + dataName + '_forward_nodes.json');
+    this.backwardNodes = require('../data/' + dataName + '_backward_nodes.json');
 
     this.data = this.allData;
+  }
 
-    // this.updateFocusNode('Manuf_0001');
+  componentWillMount() {
+    this._fetchData(this.props.dataName);
+  }
+
+  componentWillReceiveProps(props) {
+    if (props.dataName !== this.props.dataName) {
+      this._fetchData(props.dataName);
+    }
   }
 
   _isValidNodeName(name) {
@@ -94,7 +111,8 @@ class GraphWindow extends Component {
   render() {
     return (
       <div>
-        <button onClick={ () => this.updateFocusNode('') }>Reset</button>
+        <button onClick={ this.props.onHomeClicked.bind(this) }>Back to Home</button>
+        <button onClick={ () => this.updateFocusNode('') }>Reset Graph</button>
         <Graph
           width={ this.props.width }
           height={ this.props.height }
