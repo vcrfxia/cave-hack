@@ -17,6 +17,8 @@ class GraphWindow extends Component {
     this.allNodesSet = new Set();   // set version of the above
     this.forwardNodes = {};   // maps string to array of strings
     this.backwardNodes = {};
+    this.nodeCosts = {};   // maps string to double (average cost)
+    this.nodeTimes = {};
 
     this.data = {};   // data currently passed to Graph
   }
@@ -25,9 +27,11 @@ class GraphWindow extends Component {
     this.allData = require('../data/' + dataName + '.json');
     this.allNodes = this.allData.nodes.map((val) => val['id']);
     this.allNodesSet = new Set(this.allNodes);
-    this.edgeDictionary = require('../data/' + dataName + '_edge_dictionary.json')
+    this.edgeDictionary = require('../data/' + dataName + '_edge_dictionary.json');
     this.forwardNodes = require('../data/' + dataName + '_forward_nodes.json');
     this.backwardNodes = require('../data/' + dataName + '_backward_nodes.json');
+    this.nodeCosts = require('../data/' + dataName + '_costs.json');
+    this.nodeTimes = require('../data/' + dataName + '_times.json');
 
     this.data = this.allData;
   }
@@ -229,6 +233,9 @@ class GraphWindow extends Component {
           height={ this.props.height }
           data={ this.data }
           focusNode={ this.state.focusNode }
+          nodeWidths={ this.nodeTimes }
+          nodeCosts={ this.nodeCosts }
+          nodeTimes={ this.nodeTimes }
           removedNodes={ this.state.removedNodes }
           onFocusNodeChange={ (name) => this.actOnNode(name) }
         />

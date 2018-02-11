@@ -11,10 +11,16 @@ const TYPE_COLORS = {
   'Retail': '#0F0',
   'Dist': '#F00'
 };
-var ORDINAL_COLORS = d3.scaleOrdinal(d3.schemeCategory10);
+const ORDINAL_COLORS = d3.scaleOrdinal(d3.schemeCategory10);
+const MAX_WIDTH_SCALE = 10;
 
 class Graph extends Component {
-  // props: height, width, data, removedNodes (set of names), onFocusNodeChange
+  // props:
+  // height, width
+  // data
+  // nodeWidths (maps node name to float), nodeCosts, nodeTimes
+  // removedNodes (set of names)
+  // onFocusNodeChange (callback, takes new name as argument)
 
   _getColorForNode(nodeName) {
     const nodeType = nodeName.substring(0, nodeName.indexOf('_'));
@@ -41,8 +47,11 @@ class Graph extends Component {
     return offset;
   }
 
-  _getTrapezoidCoordinates(node) {
+  _getTrapezoidCoordinates(node, maxWidth) {
     const offset = this._getFlowOffset(node);
+
+    // adjust width of trapezoid based on cost
+    node.x1 = node.x0 + (node.x1 - node.x0) * MAX_WIDTH_SCALE * (this.props.nodeWidths[node.id] / maxWidth);
 
     const vertices = [];
     vertices.push(String(node.x0) + ',' + String(node.y0));   // upper left
@@ -72,6 +81,9 @@ class Graph extends Component {
       width = this.props.width - margin.left - margin.right,
       height = this.props.height - margin.top - margin.bottom;
 
+    // set up to adjust width of nodes based on cost/time
+    const maxWidth = Math.max(...Object.values(this.props.nodeWidths));
+
     // create faux DOM
     const div = new ReactFauxDOM.Element('div')
 
@@ -82,7 +94,7 @@ class Graph extends Component {
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     var formatNumber = d3.format(",.0f"),
-        format = function(d) { return formatNumber(d) + " TWh"; };
+        format = function(desc, val) { return "\n" + desc + ": " + formatNumber(val); };
 
     var sankey = d3sankey.sankey()
         .nodeWidth(15)
@@ -103,22 +115,12 @@ class Graph extends Component {
 
     sankey(this.props.data);
 
-    link = link
-      .data(this.props.data.links)
-      .enter().append("path")
-        .attr("d", this._getCustomLinkHorizontal())
-        .attr("stroke", function(d) { return this._getColorForLink(d.source.id, d.target.id); }.bind(this))
-        .attr("stroke-width", function(d) { return Math.max(1, d.width); });
-
-    link.append("title")
-        .text(function(d) { return d.source.id + " → " + d.target.id + "\n" + format(d.value); });
-
     node = node
       .data(this.props.data.nodes)
       .enter().append("g");
 
     node.append("polygon")
-        .attr("points", function(d) { return this._getTrapezoidCoordinates(d); }.bind(this))
+        .attr("points", function(d) { return this._getTrapezoidCoordinates(d, maxWidth); }.bind(this))
         .attr("fill", function(d) { return this._getColorForNode(d.id); }.bind(this))
         // .attr("stroke", "#000")
         .on("click", function(d) { this.props.onFocusNodeChange(d.id); }.bind(this));
@@ -133,8 +135,20 @@ class Graph extends Component {
         .attr("x", function(d) { return d.x1 + 6; })
         .attr("text-anchor", "start");
 
+    link = link
+      .data(this.props.data.links)
+      .enter().append("path")
+        .attr("d", this._getCustomLinkHorizontal())
+        .attr("stroke", function(d) { return this._getColorForLink(d.source.id, d.target.id); }.bind(this))
+        .attr("stroke-width", function(d) { return Math.max(1, d.width); });
+
+    link.append("title")
+        .text(function(d) { return d.source.id + " → " + d.target.id + format('Volume', d.value); });
+
     node.append("title")
-        .text(function(d) { return d.id + "\n" + format(d.value); });
+        .text(function(d) { return d.id + format('Input Volume', d.value) + 
+                              format('Cost', this.props.nodeCosts[d.id]) +
+                              format('Time', this.props.nodeTimes[d.id]); }.bind(this));
 
     // export as actual DOM
     return div.toReact();
