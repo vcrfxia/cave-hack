@@ -151,8 +151,6 @@ class GraphWindow extends Component {
       return this.nodeTimes[currentNode]
     }
     else {
-      console.log(currentNode)
-      console.log(Math.max(...backwards.map(x => this._computeAverageTimeToEndpoint(x))))
       return this.nodeTimes[currentNode] + Math.max(...backwards.map(x => this._computeAverageTimeToEndpoint(x)))
     }
   }
