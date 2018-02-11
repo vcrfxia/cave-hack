@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Button from 'material-ui/Button';
+import Radio from 'material-ui/Radio';
 
 import Graph from './Graph';
 
@@ -254,14 +255,13 @@ class GraphWindow extends Component {
   renderDisplayOptions() {
     return (
       <div>
-        <div>
-          Node width represents:
+        <div className="radio-options">
+          Node width represents: &nbsp;
           { WIDTH_OPTIONS.map(
             (option, ind) => {
               return (
-                <div key={ ind }>
-                  <input
-                    type="radio"
+                <div key={ ind } className="radio-option">
+                  <Radio
                     value={ option }
                     checked={ this.state.widthDisplay === option }
                     onChange={ this.widthDisplayChanged.bind(this) }
