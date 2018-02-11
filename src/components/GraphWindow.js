@@ -44,6 +44,30 @@ class GraphWindow extends Component {
     return this.allNodesSet.has(name);
   }
 
+  // returns object mapping nodeName to demand at that node
+  // flows will be set to the demand at their destination
+  _computeDemands(nodeSet) {
+    const demands = {};
+    const computeNodeDemand = (node) => {
+      if (node in demands) {
+        return demands[node];
+      }
+      let d = 0;
+      const out_nodes = this.forwardNodes[node].filter(x => nodeSet.has(x));
+      if (out_nodes.length === 0) {
+        const in_nodes = this.backwardNodes[node].filter(x => nodeSet.has(x));
+        d = in_nodes.map(x => this.edgeDictionary[x][node]).reduce((a, b) => a + b, 0);
+      }
+      else {
+        d = out_nodes.map(x => computeNodeDemand(x)).reduce((a, b) => a + b, 0);
+      }
+      demands[node] = d;
+      return d;
+    };
+    Array.from(nodeSet).forEach(node => { computeNodeDemand(node); });
+    return demands;
+  }
+
   updateFocusNode(focusNode) {
     if (focusNode !== this.state.focusNode) {
       if (focusNode === '') {
@@ -81,6 +105,7 @@ class GraphWindow extends Component {
 
         // construct horizontal slice
         const newNodes = Array.from(relevantNodes);
+        const newDemands = this._computeDemands(relevantNodes);
         const newNodeToInd = {};
         newNodes.forEach((val, ind) => { newNodeToInd[val] = ind; });
         const newLinks = [];
@@ -91,7 +116,7 @@ class GraphWindow extends Component {
             newLinks.push({
               source: newNodeToInd[sourceName],
               target: newNodeToInd[targetName],
-              value: link.value
+              value: newDemands[targetName]
             });
           }
         });
@@ -108,27 +133,6 @@ class GraphWindow extends Component {
       }
       this.setState({ focusNode });
     }
-  }
-
-  computeDemands(nodeList) {
-    const demands = {};
-    const computeNodeDemand = (node) => {
-      if (node in demands) {
-        return demands[node];
-      }
-      let d = 0;
-      const out_nodes = this.forwardNodes[node].filter(x => nodeList.has(x));
-      if (out_nodes.length === 0) {
-        const in_nodes = this.backwardNodes[node].filter(x => nodeList.has(x));
-        d = in_nodes.map(x => this.edgeDictionary[x][node]).reduce((a, b) => a + b, 0);
-      }
-      else {
-        d = out_nodes.map(x => computeNodeDemand(x)).reduce((a, b) => a + b, 0);
-      }
-      demands[node] = d;
-      return d;
-    };
-    return demands;
   }
 
   render() {
