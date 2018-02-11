@@ -366,11 +366,13 @@ class GraphWindow extends Component {
     if (this.state.focusNode !== '') {
       return (
         <div className="node-statistics">
-          Statistics about { this.state.focusNode }: <br/>
-          Node cost: { this.nodeCosts[this.state.focusNode] } <br/>
-          Average cost of products through this node: { this._computeAverageCost(this.state.focusNode).toFixed(2) } <br/>
-          Node average time: { this.nodeTimes[this.state.focusNode] } <br/>
-          Node demand: { this.demands[this.state.focusNode] } <br/>
+          Statistics about node { this.state.focusNode }:
+          <ul>
+            <li>Demand: { this.demands[this.state.focusNode] } </li>
+            <li>Cost: { this.nodeCosts[this.state.focusNode] } </li>
+            <li>Average time: { this.nodeTimes[this.state.focusNode] } </li>
+            <li>Average cost of products through this node: { this._computeAverageCost(this.state.focusNode).toFixed(2) } </li>
+          </ul>
         </div>
       )
     }
