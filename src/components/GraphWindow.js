@@ -6,7 +6,7 @@ import Graph from './Graph';
 import IntegrationReactSelect from './IntegrationReactSelect';
 
 const WIDTH_OPTIONS = ['time', 'cost']
-const MAX_WIDTH_SCALE = { cereal: 10, perfume: 6, aircraft: 10 };
+const MAX_WIDTH_SCALE = { cereal: 10, perfume: 6, computer: 10, aircraft: 10 };
 const AIRCRAFT_SKELETON_NODES = ['Part', 'Manuf', 'Trans', 'Retail'];
 const AIRCRAFT_SKELETON_DATA = {
   nodes: [
@@ -141,6 +141,18 @@ class GraphWindow extends Component {
     };
     Array.from(nodeSet).forEach(node => { computeNodeDemand(node); });
     return demands;
+  }
+
+  _computeAverageTimeToEndpoint(currentNode) {
+    const backwards = this.backwardNodes[currentNode]
+    if (backwards.length == 0) {
+      return this.nodeTimes[currentNode]
+    }
+    else {
+      console.log(currentNode)
+      console.log(Math.max(...backwards.map(x => this._computeAverageTimeToEndpoint(x))))
+      return this.nodeTimes[currentNode] + Math.max(...backwards.map(x => this._computeAverageTimeToEndpoint(x)))
+    }
   }
 
   _computeAverageCost(currentNode) {
@@ -351,6 +363,10 @@ class GraphWindow extends Component {
     );
   }
 
+  renderAverageTime() {
+
+  }
+
   renderNodeStatistics() {
     if (this.state.focusNode !== '') {
       return (
@@ -359,6 +375,7 @@ class GraphWindow extends Component {
           Node cost: { this.nodeCosts[this.state.focusNode] } <br/>
           Average cost of products through this node: { this._computeAverageCost(this.state.focusNode).toFixed(2) } <br/>
           Node average time: { this.nodeTimes[this.state.focusNode] } <br/>
+          Average time of products through this node: { this._computeAverageTimeToEndpoint(this.state.focusNode).toFixed(2) } <br/>
           Node demand: { this.demands[this.state.focusNode] } <br/>
         </div>
       )

@@ -23,7 +23,7 @@ const muiTheme = createMuiTheme({
     },
   }
 });
-const DATASETS = ['cereal', 'perfume', 'aircraft'];
+const DATASETS = ['cereal', 'perfume', 'computer', 'aircraft'];
 
 class App extends Component {
   constructor(props) {
