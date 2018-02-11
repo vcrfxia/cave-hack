@@ -22,6 +22,7 @@ class GraphWindow extends Component {
     this.allData = require('../data/' + dataName + '.json');
     this.allNodes = this.allData.nodes.map((val) => val['id']);
     this.allNodesSet = new Set(this.allNodes);
+    this.edgeDictionary = require('../data/' + dataName + '_edge_dictionary.json')
     this.forwardNodes = require('../data/' + dataName + '_forward_nodes.json');
     this.backwardNodes = require('../data/' + dataName + '_backward_nodes.json');
 
@@ -106,6 +107,27 @@ class GraphWindow extends Component {
       }
       this.setState({ focusNode });
     }
+  }
+
+  computeDemands(nodeList) {
+    const demands = {}
+    computeNodeDemand (node) {
+      if (node in demands) {
+        return demands[node];
+      }
+      let d = 0;
+      const out_nodes = this.forwardNodes[node].filter(x => nodeList.has(x));
+      if (out_nodes.length == 0) {
+        const in_nodes = this.backwardNodes[node].filter(x => nodeList.has(x));
+        d = in_nodes.map(x => this.edgeDictionary[x][node]).reduce((a, b) => a + b, 0);
+      }
+      else {
+        d = out_nodes.map(x => computeNodeDemand(x)).reduce((a, b) => a + b, 0);
+      }
+      demands[node] = d;
+      return d;
+    }
+    return demands
   }
 
   render() {
