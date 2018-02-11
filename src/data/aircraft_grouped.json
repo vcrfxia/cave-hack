@@ -1,0 +1,228 @@
+{
+  "directed": true, 
+  "graph": {}, 
+  "nodes": [
+    {
+      "id": "Part_0.5"
+    }, 
+    {
+      "id": "Manuf_5"
+    }, 
+    {
+      "id": "Part_20"
+    }, 
+    {
+      "id": "Manuf_2"
+    }, 
+    {
+      "id": "Part_50"
+    }, 
+    {
+      "id": "Part_10"
+    }, 
+    {
+      "id": "Manuf_50"
+    }, 
+    {
+      "id": "Part_0"
+    }, 
+    {
+      "id": "Part_1"
+    }, 
+    {
+      "id": "Part_2"
+    }, 
+    {
+      "id": "Manuf_10"
+    }, 
+    {
+      "id": "Part_5"
+    }, 
+    {
+      "id": "Manuf_20"
+    }
+  ], 
+  "links": [
+    {
+      "source": 0, 
+      "target": 1, 
+      "value": 275.21000000000009
+    }, 
+    {
+      "source": 0, 
+      "target": 10, 
+      "value": 3312.7300000000023
+    }, 
+    {
+      "source": 0, 
+      "target": 3, 
+      "value": 285.93999999999977
+    }, 
+    {
+      "source": 0, 
+      "target": 12, 
+      "value": 17434.560000000056
+    }, 
+    {
+      "source": 0, 
+      "target": 6, 
+      "value": 6367.2300000000041
+    }, 
+    {
+      "source": 2, 
+      "target": 1, 
+      "value": 9.4900000000000002
+    }, 
+    {
+      "source": 2, 
+      "target": 10, 
+      "value": 95.139999999999986
+    }, 
+    {
+      "source": 2, 
+      "target": 3, 
+      "value": 9.379999999999999
+    }, 
+    {
+      "source": 2, 
+      "target": 12, 
+      "value": 659.13999999999999
+    }, 
+    {
+      "source": 2, 
+      "target": 6, 
+      "value": 223.09
+    }, 
+    {
+      "source": 4, 
+      "target": 12, 
+      "value": 116.56000000000002
+    }, 
+    {
+      "source": 5, 
+      "target": 1, 
+      "value": 9.4900000000000002
+    }, 
+    {
+      "source": 5, 
+      "target": 10, 
+      "value": 102.22
+    }, 
+    {
+      "source": 5, 
+      "target": 3, 
+      "value": 9.379999999999999
+    }, 
+    {
+      "source": 5, 
+      "target": 12, 
+      "value": 989.48999999999967
+    }, 
+    {
+      "source": 5, 
+      "target": 6, 
+      "value": 447.90000000000003
+    }, 
+    {
+      "source": 7, 
+      "target": 1, 
+      "value": 825.63000000000056
+    }, 
+    {
+      "source": 7, 
+      "target": 10, 
+      "value": 10133.61999999997
+    }, 
+    {
+      "source": 7, 
+      "target": 3, 
+      "value": 801.6399999999976
+    }, 
+    {
+      "source": 7, 
+      "target": 12, 
+      "value": 58795.540000000241
+    }, 
+    {
+      "source": 7, 
+      "target": 6, 
+      "value": 22902.44999999987
+    }, 
+    {
+      "source": 8, 
+      "target": 1, 
+      "value": 199.29000000000005
+    }, 
+    {
+      "source": 8, 
+      "target": 10, 
+      "value": 2063.2800000000002
+    }, 
+    {
+      "source": 8, 
+      "target": 3, 
+      "value": 183.67999999999989
+    }, 
+    {
+      "source": 8, 
+      "target": 12, 
+      "value": 13546.140000000019
+    }, 
+    {
+      "source": 8, 
+      "target": 6, 
+      "value": 5174.9000000000033
+    }, 
+    {
+      "source": 9, 
+      "target": 1, 
+      "value": 180.31000000000003
+    }, 
+    {
+      "source": 9, 
+      "target": 10, 
+      "value": 1940.3500000000008
+    }, 
+    {
+      "source": 9, 
+      "target": 3, 
+      "value": 183.05999999999989
+    }, 
+    {
+      "source": 9, 
+      "target": 12, 
+      "value": 11221.690000000015
+    }, 
+    {
+      "source": 9, 
+      "target": 6, 
+      "value": 4970.0700000000043
+    }, 
+    {
+      "source": 11, 
+      "target": 1, 
+      "value": 37.960000000000001
+    }, 
+    {
+      "source": 11, 
+      "target": 10, 
+      "value": 805.09000000000026
+    }, 
+    {
+      "source": 11, 
+      "target": 3, 
+      "value": 45.980000000000011
+    }, 
+    {
+      "source": 11, 
+      "target": 12, 
+      "value": 2791.4099999999989
+    }, 
+    {
+      "source": 11, 
+      "target": 6, 
+      "value": 1154.4299999999998
+    }
+  ], 
+  "multigraph": false
+}

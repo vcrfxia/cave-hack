@@ -95,7 +95,7 @@ class GraphWindow extends Component {
     return (
       <div>
         <button onClick={ () => this.updateFocusNode('') }>Reset</button>
-        <Graph 
+        <Graph
           width={ this.props.width }
           height={ this.props.height }
           data={ this.data }

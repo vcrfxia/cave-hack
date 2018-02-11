@@ -1,0 +1,56 @@
+{
+  "Part_0.5": [], 
+  "Manuf_5": [
+    "Part_0.5", 
+    "Part_20", 
+    "Part_10", 
+    "Part_0", 
+    "Part_1", 
+    "Part_2", 
+    "Part_5"
+  ], 
+  "Part_20": [], 
+  "Manuf_2": [
+    "Part_0.5", 
+    "Part_20", 
+    "Part_10", 
+    "Part_0", 
+    "Part_1", 
+    "Part_2", 
+    "Part_5"
+  ], 
+  "Part_50": [], 
+  "Part_10": [], 
+  "Manuf_50": [
+    "Part_0.5", 
+    "Part_20", 
+    "Part_10", 
+    "Part_0", 
+    "Part_1", 
+    "Part_2", 
+    "Part_5"
+  ], 
+  "Part_0": [], 
+  "Part_1": [], 
+  "Part_2": [], 
+  "Manuf_10": [
+    "Part_0.5", 
+    "Part_20", 
+    "Part_10", 
+    "Part_0", 
+    "Part_1", 
+    "Part_2", 
+    "Part_5"
+  ], 
+  "Part_5": [], 
+  "Manuf_20": [
+    "Part_0.5", 
+    "Part_20", 
+    "Part_50", 
+    "Part_10", 
+    "Part_0", 
+    "Part_1", 
+    "Part_2", 
+    "Part_5"
+  ]
+}
