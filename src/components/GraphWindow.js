@@ -7,7 +7,7 @@ import IntegrationReactSelect from './IntegrationReactSelect';
 import PersistentDrawer from './PersistentDrawer';
 
 const WIDTH_OPTIONS = ['time', 'cost']
-const MAX_WIDTH_SCALE = { cereal: 10, perfume: 6, computer: 10, aircraft: 10 };
+const MAX_WIDTH_SCALE = { cereal: 10, perfume: 6, computer: 5, aircraft: 10 };
 const AIRCRAFT_SKELETON_NODES = ['Part', 'Manuf', 'Trans', 'Retail'];
 const AIRCRAFT_SKELETON_DATA = {
   nodes: [
@@ -146,8 +146,8 @@ class GraphWindow extends Component {
   }
 
   _computeAverageTimeToEndpoint(currentNode) {
-    const backwards = this.backwardNodes[currentNode]
-    if (backwards.length == 0) {
+    const backwards = this.backwardNodes[currentNode];
+    if (backwards.length === 0) {
       return this.nodeTimes[currentNode]
     }
     else {
@@ -378,6 +378,7 @@ class GraphWindow extends Component {
 
   renderNodeStatistics() {
     if (this.state.focusNode !== '') {
+      const timeToNode = this._computeAverageTimeToEndpoint(this.state.focusNode).toFixed(2) - this.nodeTimes[this.state.focusNode];
       return (
         <div className="node-statistics">
           Statistics about node { this.state.focusNode }:
@@ -386,7 +387,7 @@ class GraphWindow extends Component {
             <li>Cost: { this.nodeCosts[this.state.focusNode] } </li>
             <li>Average time: { this.nodeTimes[this.state.focusNode] } </li>
             <li>Average cost of products through this node: { this._computeAverageCost(this.state.focusNode).toFixed(2) } </li>
-            <li>Average time of products to finish this node: { this._computeAverageTimeToEndpoint(this.state.focusNode).toFixed(2) } </li>
+            <li>Average time of products to reach this node: { timeToNode } </li>
           </ul>
         </div>
       )
