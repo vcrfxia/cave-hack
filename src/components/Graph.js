@@ -2,12 +2,13 @@ import { Component } from 'react';
 import * as d3 from 'd3';
 import ReactFauxDOM from 'react-faux-dom';
 import * as d3sankey from 'd3-sankey';
+import {linkHorizontal} from "d3-shape";
 
 const TYPE_COLORS = {
   'Manuf': '#F0F',
   'Trans': '#00F',
   'Retail': '#0F0',
-  'Dist': '#FF0'
+  'Dist': '#F00'
 };
 var ORDINAL_COLORS = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -21,6 +22,38 @@ class Graph extends Component {
     } else {
       return TYPE_COLORS[nodeType];
     }
+  }
+
+  // compute sum of outgoing widths
+  _getFlowOffset(node) {
+    const outgoingWidth = node.sourceLinks.map(val => val.width).reduce((a, b) => a + b, 0);
+    const offset = outgoingWidth === 0 ? 0 : (node.y1 - node.y0 - outgoingWidth) / 2;
+    return offset;
+  }
+
+  _getTrapezoidCoordinates(node) {
+    const offset = this._getFlowOffset(node);
+
+    const vertices = [];
+    vertices.push(String(node.x0) + ',' + String(node.y0));   // upper left
+    vertices.push(String(node.x0) + ',' + String(node.y1));   // lower left
+    vertices.push(String(node.x1) + ',' + String(node.y1 - offset));   // lower right
+    vertices.push(String(node.x1) + ',' + String(node.y0 + offset));   // upper right
+    return vertices.join(' ');
+  }
+
+  _getHorizontalSource(d) {
+    const offset = this._getFlowOffset(d.source);
+    return [d.source.x1, d.y0 + offset];
+  }
+  _getHorizontalTarget(d) {
+    return [d.target.x0, d.y1];
+  }
+
+  _getCustomLinkHorizontal() {
+    return linkHorizontal()
+              .source(this._getHorizontalSource.bind(this))
+              .target(this._getHorizontalTarget.bind(this));
   }
 
   // sankey plotting code from: https://bl.ocks.org/mbostock/ca9a0bb7ba204d12974bca90acc507c0
@@ -63,7 +96,7 @@ class Graph extends Component {
     link = link
       .data(this.props.data.links)
       .enter().append("path")
-        .attr("d", d3sankey.sankeyLinkHorizontal())
+        .attr("d", this._getCustomLinkHorizontal())
         .attr("stroke", function(d) { return this._getColorForNode(d.source.id); }.bind(this))
         .attr("stroke-width", function(d) { return Math.max(1, d.width); });
 
@@ -74,13 +107,10 @@ class Graph extends Component {
       .data(this.props.data.nodes)
       .enter().append("g");
 
-    node.append("rect")
-        .attr("x", function(d) { return d.x0; })
-        .attr("y", function(d) { return d.y0; })
-        .attr("height", function(d) { return d.y1 - d.y0; })
-        .attr("width", function(d) { return d.x1 - d.x0; })
+    node.append("polygon")
+        .attr("points", function(d) { return this._getTrapezoidCoordinates(d); }.bind(this))
         .attr("fill", function(d) { return this._getColorForNode(d.id); }.bind(this))
-        .attr("stroke", "#000")
+        // .attr("stroke", "#000")
         .on("click", function(d) { this.props.onFocusNodeChange(d.id); }.bind(this));
 
     node.append("text")
