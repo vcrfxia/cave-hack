@@ -92,6 +92,14 @@ class GraphWindow extends Component {
     return demands;
   }
 
+  _computeAverageCost(currentNode) {
+    let sum = 0;
+    for (const key in this.demands) {
+      sum += this.nodeCosts[key] * this.demands[key];
+    }
+    return sum / this.demands[currentNode];
+  }
+
   nodeActionChanged(newAction) {
     this.setState({ nodeAction: newAction });
   }
@@ -197,6 +205,7 @@ class GraphWindow extends Component {
         // construct horizontal slice
         const newNodes = Array.from(relevantNodes);
         const newDemands = this._computeDemands(relevantNodes);
+        this.demands = newDemands
         const newNodeToInd = {};
         newNodes.forEach((val, ind) => { newNodeToInd[val] = ind; });
         const newLinks = [];
@@ -281,8 +290,23 @@ class GraphWindow extends Component {
         <IntegrationReactSelect
           onSelect={ this.actOnNode.bind(this) }
           options={ this.allNodes }/>
-      </div>  
+      </div>
     );
+  }
+
+  renderNodeStatistics() {
+    if (this.state.focusNode !== '') {
+      return (
+        <div className="node-statistics">
+          Statistics about { this.state.focusNode }: <br/>
+          Node cost: { this.nodeCosts[this.state.focusNode] } <br/>
+          Average cost of products through this node: { this._computeAverageCost(this.state.focusNode).toFixed(2) } <br/>
+          Node average time: { this.nodeTimes[this.state.focusNode] } <br/>
+          Node demand: { this.demands[this.state.focusNode] } <br/>
+        </div>
+      )
+    }
+    return '';
   }
 
   render() {
@@ -303,6 +327,7 @@ class GraphWindow extends Component {
           removedNodes={ this.state.removedNodes }
           onFocusNodeChange={ (name) => this.actOnNode(name) }
         />
+        { this.renderNodeStatistics() }
       </div>
     );
   }
