@@ -1,14 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
-import classNames from 'classnames';
 import Drawer from 'material-ui/Drawer';
-import AppBar from 'material-ui/AppBar';
-import Toolbar from 'material-ui/Toolbar';
-import Typography from 'material-ui/Typography';
 import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
-import MenuIcon from 'material-ui-icons/Menu';
 import KeyboardArrowUp from 'material-ui-icons/KeyboardArrowUp';
 import KeyboardArrowDown from 'material-ui-icons/KeyboardArrowDown';
 
@@ -82,9 +77,6 @@ const styles = theme => ({
 
 class PersistentDrawer extends React.Component {
   // props: open (boolean), onDrawerClose (callback), onDrawerOpen
-  state = {
-    anchor: 'bottom',
-  };
 
   renderToggleIcon() {
     const { classes } = this.props;
@@ -108,8 +100,7 @@ class PersistentDrawer extends React.Component {
   }
 
   render() {
-    const { classes, theme, open, contents } = this.props;
-    const { anchor } = this.state;
+    const { classes, open } = this.props;
 
     const drawer = (
       <Drawer
