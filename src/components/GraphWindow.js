@@ -7,7 +7,9 @@ class GraphWindow extends Component {
   constructor(props) {   // width, height, dataName (string: cereal/perfume/aircraft), onHomeClicked
     super(props);
     this.state = {
-      focusNode: ''   // name of node to focus graph on; empty if none
+      focusNode: '',   // name of node to focus graph on; empty if none,
+      nodeAction: 'focus',
+      removedNodes: new Set()
     };
     // contains nodes (array of names), links (array of objects (source: name, target: name, value: double))
     this.allData = {};
@@ -66,6 +68,69 @@ class GraphWindow extends Component {
     };
     Array.from(nodeSet).forEach(node => { computeNodeDemand(node); });
     return demands;
+  }
+
+  updateNodeAction(newAction) {
+    this.setState({ nodeAction: newAction });
+  }
+
+  resetGraphClicked() {
+    this.updateFocusNode('');
+    this.setState({ removedNodes: new Set() });
+  }
+
+  actOnNode(nodeName) {
+    if (this.state.nodeAction === 'focus') {
+      this.updateFocusNode(nodeName);
+    } else if (this.state.nodeAction === 'remove') {
+      this.removeNode(nodeName);
+    } else {
+      console.log('invalid node action attempted.');
+    }
+  }
+
+  removeNode(nodeName) {
+    if (!this.allNodesSet.has(nodeName)) {
+      return;
+    }
+    const { removedNodes } = this.state;
+    if (!this.state.removedNodes.has(nodeName)) {
+      const removeNodeRecursive = (name) => {
+        removedNodes.add(name);
+        // remove everything downstream
+        this.forwardNodes[name].forEach(nextName => {
+          if (!removedNodes.has(nextName)) {
+            removeNodeRecursive(nextName);
+          }
+        });
+        // only remove upstream nodes if all other outputs are gone as well
+        this.backwardNodes[name].forEach(prevName => {
+          if (!removedNodes.has(prevName) &&
+              this.forwardNodes[prevName].every(nextNode => removedNodes.has(nextNode))) {
+            removeNodeRecursive(prevName);
+          }
+        });
+      }
+      removeNodeRecursive(nodeName);
+    } else {
+      const restoreNodeRecursive = (name) => {
+        if (removedNodes.delete(name)) {
+          // restore all connected nodes
+          this.forwardNodes[name].forEach(nextName => {
+            if (removedNodes.has(nextName)) {
+              restoreNodeRecursive(nextName);
+            }
+          })
+          this.backwardNodes[name].forEach(prevName => {
+            if (removedNodes.has(prevName)) {
+              restoreNodeRecursive(prevName);
+            }
+          })
+        }
+      }
+      restoreNodeRecursive(nodeName);
+    }
+    this.setState({ removedNodes });
   }
 
   updateFocusNode(focusNode) {
@@ -141,14 +206,31 @@ class GraphWindow extends Component {
         <div className="nav-buttons">
           <Button variant="raised" color="secondary" onClick={ this.props.onHomeClicked.bind(this) }>Back to Home</Button>
           &nbsp;
-          <Button variant="raised" color="secondary" onClick={ () => this.updateFocusNode('') }>Reset Graph</Button>
+          <Button variant="raised" color="secondary" onClick={ this.resetGraphClicked.bind(this) }>Reset Graph</Button>
+        </div>
+        <div className="option-buttons">
+          <Button
+              variant={ this.state.nodeAction === 'focus' ? "flat" : "raised" }
+              disabled={ this.state.nodeAction === 'focus' }
+              color="secondary"
+              onClick={ () => this.updateNodeAction('focus') }>
+            Focus on Node
+          </Button>
+          <Button
+              variant={ this.state.nodeAction === 'remove' ? "flat" : "raised" }
+              disabled={ this.state.nodeAction === 'remove' }
+              color="secondary"
+              onClick={ () => this.updateNodeAction('remove') }>
+            Remove Node
+          </Button>
         </div>
         <Graph
           width={ this.props.width }
           height={ this.props.height }
           data={ this.data }
           focusNode={ this.state.focusNode }
-          onFocusNodeChange={ (name) => this.updateFocusNode(name) }
+          removedNodes={ this.state.removedNodes }
+          onFocusNodeChange={ (name) => this.actOnNode(name) }
         />
       </div>
     );

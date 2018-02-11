@@ -4,6 +4,7 @@ import ReactFauxDOM from 'react-faux-dom';
 import * as d3sankey from 'd3-sankey';
 import {linkHorizontal} from "d3-shape";
 
+const GRAY = '#CCC';
 const TYPE_COLORS = {
   'Manuf': '#F0F',
   'Trans': '#00F',
@@ -13,15 +14,24 @@ const TYPE_COLORS = {
 var ORDINAL_COLORS = d3.scaleOrdinal(d3.schemeCategory10);
 
 class Graph extends Component {
-  // props: height, width, data, onFocusNodeChange
+  // props: height, width, data, removedNodes (set of names), onFocusNodeChange
 
   _getColorForNode(nodeName) {
     const nodeType = nodeName.substring(0, nodeName.indexOf('_'));
+    if (this.props.removedNodes.has(nodeName)) {
+      return GRAY;
+    }
     if (nodeType === 'Part') {
       return ORDINAL_COLORS(nodeName);
     } else {
       return TYPE_COLORS[nodeType];
     }
+  }
+  _getColorForLink(sourceName, targetName) {
+    if (this.props.removedNodes.has(targetName)) {
+      return GRAY;
+    }
+    return this._getColorForNode(sourceName);
   }
 
   // compute sum of outgoing widths
@@ -97,7 +107,7 @@ class Graph extends Component {
       .data(this.props.data.links)
       .enter().append("path")
         .attr("d", this._getCustomLinkHorizontal())
-        .attr("stroke", function(d) { return this._getColorForNode(d.source.id); }.bind(this))
+        .attr("stroke", function(d) { return this._getColorForLink(d.source.id, d.target.id); }.bind(this))
         .attr("stroke-width", function(d) { return Math.max(1, d.width); });
 
     link.append("title")

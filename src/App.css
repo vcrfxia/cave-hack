@@ -32,6 +32,13 @@
 
 .nav-buttons {
   padding: 10px;
+  max-width: 50%;
+}
+
+.option-buttons {
+  padding: 10px;
+  float: right;
+  max-width: 50%;
 }
 
 @keyframes App-logo-spin {
