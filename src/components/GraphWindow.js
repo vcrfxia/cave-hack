@@ -4,6 +4,7 @@ import Radio from 'material-ui/Radio';
 
 import Graph from './Graph';
 import IntegrationReactSelect from './IntegrationReactSelect';
+import PersistentDrawer from './PersistentDrawer';
 
 const WIDTH_OPTIONS = ['time', 'cost']
 const MAX_WIDTH_SCALE = { cereal: 10, perfume: 6, computer: 10, aircraft: 10 };
@@ -52,7 +53,8 @@ class GraphWindow extends Component {
       focusNode: '',   // name of node to focus graph on; empty if none,
       nodeAction: 'focus',
       removedNodes: new Set(),
-      widthDisplay: 'time'
+      widthDisplay: 'time',
+      drawerOpen: false
     };
     // contains nodes (array of names), links (array of objects (source: name, target: name, value: double))
     this.allData = {};
@@ -176,6 +178,13 @@ class GraphWindow extends Component {
     this.setState({ removedNodes: new Set() });
   }
 
+  drawerOpened() {
+    this.setState({ drawerOpen: true });
+  }
+  drawerClosed() {
+    this.setState({ drawerOpen: false });
+  }
+
   actOnNode(nodeName) {
     if (this.state.nodeAction === 'focus') {
       this.updateFocusNode(nodeName);
@@ -294,6 +303,8 @@ class GraphWindow extends Component {
           graph: {},
           multigraph: false
         };
+
+        this.setState({ drawerOpen: true });
       } else if (AIRCRAFT_SKELETON_NODES.has(focusNode)) {
         return;
       } else {  // invalid name
@@ -371,12 +382,14 @@ class GraphWindow extends Component {
     if (this.state.focusNode !== '') {
       return (
         <div className="node-statistics">
-          Statistics about { this.state.focusNode }: <br/>
-          Node cost: { this.nodeCosts[this.state.focusNode] } <br/>
-          Average cost of products through this node: { this._computeAverageCost(this.state.focusNode).toFixed(2) } <br/>
-          Node average time: { this.nodeTimes[this.state.focusNode] } <br/>
-          Average time of products through this node: { this._computeAverageTimeToEndpoint(this.state.focusNode).toFixed(2) } <br/>
-          Node demand: { this.demands[this.state.focusNode] } <br/>
+          Statistics about node { this.state.focusNode }:
+          <ul>
+            <li>Demand: { this.demands[this.state.focusNode] } </li>
+            <li>Cost: { this.nodeCosts[this.state.focusNode] } </li>
+            <li>Average time: { this.nodeTimes[this.state.focusNode] } </li>
+            <li>Average cost of products through this node: { this._computeAverageCost(this.state.focusNode).toFixed(2) } </li>
+            <li>Average time of products to finish this node: { this._computeAverageTimeToEndpoint(this.state.focusNode).toFixed(2) } </li>
+          </ul>
         </div>
       )
     }
@@ -401,7 +414,13 @@ class GraphWindow extends Component {
           removedNodes={ this.state.removedNodes }
           onFocusNodeChange={ (name) => this.actOnNode(name) }
         />
-        { this.renderNodeStatistics() }
+        <div className="drawer-div">
+          <PersistentDrawer
+            open={ this.state.drawerOpen }
+            contents={ this.renderNodeStatistics() }
+            onDrawerClose={this.drawerClosed.bind(this)}
+            onDrawerOpen={this.drawerOpened.bind(this)}/>
+        </div>
       </div>
     );
   }

@@ -44,6 +44,15 @@
   display: inline-block;
 }
 
+.drawer-div {
+  margin-left: 20px;
+  display: block;
+}
+
+.node-statistics {
+  padding: 10px;
+}
+
 @keyframes App-logo-spin {
   0% { transform: translate(-50px, 0px); }
   50% { transform: translate(50px, 0px);  }
