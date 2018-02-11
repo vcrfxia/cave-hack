@@ -5,6 +5,7 @@ import Radio from 'material-ui/Radio';
 import Graph from './Graph';
 
 const WIDTH_OPTIONS = ['time', 'cost']
+const MAX_WIDTH_SCALE = { cereal: 10, perfume: 6 };
 
 class GraphWindow extends Component {
   constructor(props) {   // width, height, dataName (string: cereal/perfume/aircraft), onHomeClicked
@@ -283,6 +284,7 @@ class GraphWindow extends Component {
         <Graph
           width={ this.props.width }
           height={ this.props.height }
+          maxWidthScale={ MAX_WIDTH_SCALE[this.props.dataName] }
           data={ this.data }
           focusNode={ this.state.focusNode }
           nodeWidths={ this._getNodeWidths() }

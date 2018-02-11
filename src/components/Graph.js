@@ -12,11 +12,10 @@ const TYPE_COLORS = {
   'Dist': '#F00'
 };
 const ORDINAL_COLORS = d3.scaleOrdinal(d3.schemeCategory10);
-const MAX_WIDTH_SCALE = 10;
 
 class Graph extends Component {
   // props:
-  // height, width
+  // height, width, maxWidthScale
   // data
   // nodeWidths (maps node name to float), nodeCosts, nodeTimes
   // removedNodes (set of names)
@@ -53,7 +52,7 @@ class Graph extends Component {
     // adjust width of trapezoid based on cost
     const adjustedWidth = (this.props.nodeWidths[node.id] < 0.0001
                             ? 1
-                            : (node.x1 - node.x0) * MAX_WIDTH_SCALE * (this.props.nodeWidths[node.id] / maxWidth));
+                            : (node.x1 - node.x0) * this.props.maxWidthScale * (this.props.nodeWidths[node.id] / maxWidth));
     node.x1 = node.x0 + Math.ceil(adjustedWidth);
 
     const vertices = [];
@@ -134,6 +133,7 @@ class Graph extends Component {
         .attr("dy", "0.35em")
         .attr("text-anchor", "end")
         .text(function(d) { return d.id; })
+        .on("click", function(d) { this.props.onFocusNodeChange(d.id); }.bind(this))
       .filter(function(d) { return d.x0 < width / 2; })
         .attr("x", function(d) { return d.x1 + 6; })
         .attr("text-anchor", "start");
