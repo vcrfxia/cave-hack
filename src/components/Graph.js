@@ -150,7 +150,7 @@ class Graph extends Component {
         .text(function(d) { return d.source.id + " → " + d.target.id + format('Volume', d.value); });
 
     node.append("title")
-        .text(function(d) { return d.id + format('Input Volume', d.value) + 
+        .text(function(d) { return d.id + format('Input Volume', d.value) +
                               format('Cost', this.props.nodeCosts[d.id]) +
                               format('Time', this.props.nodeTimes[d.id]); }.bind(this));
 
