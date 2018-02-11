@@ -159,7 +159,6 @@ class Graph extends Component {
   }
 
   render() {
-    console.log(this.props.data)
     return this.drawChart();
   }
 }

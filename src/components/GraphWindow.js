@@ -4,6 +4,7 @@ import Radio from 'material-ui/Radio';
 
 import Graph from './Graph';
 import IntegrationReactSelect from './IntegrationReactSelect';
+import PersistentDrawer from './PersistentDrawer';
 
 const WIDTH_OPTIONS = ['time', 'cost']
 const MAX_WIDTH_SCALE = { cereal: 10, perfume: 6, aircraft: 10 };
@@ -52,7 +53,8 @@ class GraphWindow extends Component {
       focusNode: '',   // name of node to focus graph on; empty if none,
       nodeAction: 'focus',
       removedNodes: new Set(),
-      widthDisplay: 'time'
+      widthDisplay: 'time',
+      drawerOpen: false
     };
     // contains nodes (array of names), links (array of objects (source: name, target: name, value: double))
     this.allData = {};
@@ -154,6 +156,13 @@ class GraphWindow extends Component {
   resetGraphClicked() {
     this.updateFocusNode('');
     this.setState({ removedNodes: new Set() });
+  }
+
+  drawerOpened() {
+    this.setState({ drawerOpen: true });
+  }
+  drawerClosed() {
+    this.setState({ drawerOpen: false });
   }
 
   actOnNode(nodeName) {
@@ -273,6 +282,8 @@ class GraphWindow extends Component {
           graph: {},
           multigraph: false
         };
+
+        this.setState({ drawerOpen: true });
       } else if (AIRCRAFT_SKELETON_NODES.has(focusNode)) {
         return;
       } else {  // invalid name
@@ -360,6 +371,13 @@ class GraphWindow extends Component {
           removedNodes={ this.state.removedNodes }
           onFocusNodeChange={ (name) => this.actOnNode(name) }
         />
+        <div className="drawer-div">
+          <PersistentDrawer
+            open={ this.state.drawerOpen }
+            contents="hello"
+            onDrawerClose={this.drawerClosed.bind(this)}
+            onDrawerOpen={this.drawerOpened.bind(this)}/>
+        </div>
       </div>
     );
   }
