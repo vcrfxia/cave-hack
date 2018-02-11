@@ -111,14 +111,14 @@ class GraphWindow extends Component {
   }
 
   computeDemands(nodeList) {
-    const demands = {}
-    computeNodeDemand (node) {
+    const demands = {};
+    const computeNodeDemand = (node) => {
       if (node in demands) {
         return demands[node];
       }
       let d = 0;
       const out_nodes = this.forwardNodes[node].filter(x => nodeList.has(x));
-      if (out_nodes.length == 0) {
+      if (out_nodes.length === 0) {
         const in_nodes = this.backwardNodes[node].filter(x => nodeList.has(x));
         d = in_nodes.map(x => this.edgeDictionary[x][node]).reduce((a, b) => a + b, 0);
       }
@@ -127,8 +127,8 @@ class GraphWindow extends Component {
       }
       demands[node] = d;
       return d;
-    }
-    return demands
+    };
+    return demands;
   }
 
   render() {
