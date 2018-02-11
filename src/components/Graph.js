@@ -22,7 +22,8 @@ class Graph extends Component {
   // onFocusNodeChange (callback, takes new name as argument)
 
   _getColorForNode(nodeName) {
-    const nodeType = nodeName.substring(0, nodeName.indexOf('_'));
+    const underscoreInd = nodeName.indexOf('_') === -1 ? nodeName.length : nodeName.indexOf('_');
+    const nodeType = nodeName.substring(0, underscoreInd);
     if (this.props.removedNodes.has(nodeName)) {
       return GRAY;
     }
@@ -158,6 +159,7 @@ class Graph extends Component {
   }
 
   render() {
+    console.log(this.props.data)
     return this.drawChart();
   }
 }
