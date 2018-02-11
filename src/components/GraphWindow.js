@@ -3,6 +3,7 @@ import Button from 'material-ui/Button';
 import Radio from 'material-ui/Radio';
 
 import Graph from './Graph';
+import IntegrationReactSelect from './IntegrationReactSelect';
 
 const WIDTH_OPTIONS = ['time', 'cost']
 const MAX_WIDTH_SCALE = { cereal: 10, perfume: 6 };
@@ -255,24 +256,32 @@ class GraphWindow extends Component {
 
   renderDisplayOptions() {
     return (
-      <div>
-        <div className="radio-options">
-          Node width represents: &nbsp;
-          { WIDTH_OPTIONS.map(
-            (option, ind) => {
-              return (
-                <div key={ ind } className="radio-option">
-                  <Radio
-                    value={ option }
-                    checked={ this.state.widthDisplay === option }
-                    onChange={ this.widthDisplayChanged.bind(this) }
-                  />{ option } &nbsp;
-                </div>
-              )
-            }
-          )}
-        </div>
+      <div className="radio-options">
+        Node width represents: &nbsp;
+        { WIDTH_OPTIONS.map(
+          (option, ind) => {
+            return (
+              <div key={ ind } className="radio-option">
+                <Radio
+                  value={ option }
+                  checked={ this.state.widthDisplay === option }
+                  onChange={ this.widthDisplayChanged.bind(this) }
+                />{ option } &nbsp;
+              </div>
+            )
+          }
+        )}
       </div>
+    );
+  }
+
+  renderSearchBar() {
+    return (
+      <div className="search-bar">
+        <IntegrationReactSelect
+          onSelect={ this.actOnNode.bind(this) }
+          options={ this.allNodes }/>
+      </div>  
     );
   }
 
@@ -281,6 +290,7 @@ class GraphWindow extends Component {
       <div>
         { this.renderTopBarButtons() }
         { this.renderDisplayOptions() }
+        { this.renderSearchBar() }
         <Graph
           width={ this.props.width }
           height={ this.props.height }
