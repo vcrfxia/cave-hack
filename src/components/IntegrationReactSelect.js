@@ -189,15 +189,7 @@ const styles = theme => ({
 });
 
 class IntegrationReactSelect extends React.Component {
-  // props: onSelect (callback, takes the value of the argument), options (array of strings)
-
-  _getSuggestions() {
-    const suggestions = this.props.options.map(val => ({
-      value: val,
-      label: val,
-    }));
-    return suggestions;
-  }
+  // props: onSelect (callback, takes the value of the argument), options (array of suggestion objects)
 
   render() {
     const { classes } = this.props;
@@ -216,7 +208,7 @@ class IntegrationReactSelect extends React.Component {
             id: 'react-select-single',
             name: 'react-select-single',
             simpleValue: true,
-            options: this._getSuggestions(),
+            options: this.props.options,
           }}
         />
       </div>

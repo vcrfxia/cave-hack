@@ -6,7 +6,44 @@ import Graph from './Graph';
 import IntegrationReactSelect from './IntegrationReactSelect';
 
 const WIDTH_OPTIONS = ['time', 'cost']
-const MAX_WIDTH_SCALE = { cereal: 10, perfume: 6 };
+const MAX_WIDTH_SCALE = { cereal: 10, perfume: 6, aircraft: 10 };
+const AIRCRAFT_SKELETON_NODES = ['Part', 'Manuf', 'Trans', 'Retail'];
+const AIRCRAFT_SKELETON_DATA = {
+  nodes: [
+    {
+      id: 'Part'
+    },
+    {
+      id: 'Manuf'
+    },
+    {
+      id: 'Trans'
+    },
+    {
+      id: 'Retail'
+    }
+  ],
+  links: [
+    {
+      source: 0,
+      target: 1,
+      value: 1
+    },
+    {
+      source: 1,
+      target: 2,
+      value: 1
+    },
+    {
+      source: 2,
+      target: 3,
+      value: 1
+    }
+  ],
+  directed: true,
+  graph: {},
+  multigraph: false
+};
 
 class GraphWindow extends Component {
   constructor(props) {   // width, height, dataName (string: cereal/perfume/aircraft), onHomeClicked
@@ -21,6 +58,7 @@ class GraphWindow extends Component {
     this.allData = {};
     this.allNodes = [];  // array of strings
     this.allNodesSet = new Set();   // set version of the above
+    this.allNodesAsSuggestions = [];   // for autocomplete purposes
     this.forwardNodes = {};   // maps string to array of strings
     this.backwardNodes = {};
     this.nodeCosts = {};   // maps string to double (average cost)
@@ -33,13 +71,26 @@ class GraphWindow extends Component {
     this.allData = require('../data/' + dataName + '.json');
     this.allNodes = this.allData.nodes.map((val) => val['id']);
     this.allNodesSet = new Set(this.allNodes);
+    this.allNodesAsSuggestions = this.allNodes.map(val => ({
+      value: val,
+      label: val,
+    }));
+    // should only visualize Parts for aircraft data, since otherwise there are too many parts
+    // TODO: combine all the Parts nodes into a single node, to allow for visualization of other ndoes as well
+    if (dataName === 'aircraft') {
+      this.allNodesAsSuggestions = this.allNodesAsSuggestions.filter(val => val['value'].includes('Part'));
+    }
     this.edgeDictionary = require('../data/' + dataName + '_edge_dictionary.json');
     this.forwardNodes = require('../data/' + dataName + '_forward_nodes.json');
     this.backwardNodes = require('../data/' + dataName + '_backward_nodes.json');
     this.nodeCosts = require('../data/' + dataName + '_costs.json');
     this.nodeTimes = require('../data/' + dataName + '_times.json');
 
-    this.data = this.allData;
+    if (dataName === 'aircraft' && this.state.focusNode === '') {
+      this.data = Object.assign({}, AIRCRAFT_SKELETON_DATA);
+    } else {
+      this.data = this.allData;
+    }
   }
 
   componentWillMount() {
@@ -170,7 +221,11 @@ class GraphWindow extends Component {
   updateFocusNode(focusNode) {
     if (focusNode !== this.state.focusNode) {
       if (focusNode === '') {
-        this.data = this.allData;
+        if (this.state.dataName === 'aircraft') {
+          this.data = Object.assign({}, AIRCRAFT_SKELETON_DATA);
+        } else {
+          this.data = this.allData;
+        }
       } else if (this._isValidNodeName(focusNode)) {
         const relevantNodes = new Set();
         relevantNodes.add(focusNode);
@@ -210,8 +265,8 @@ class GraphWindow extends Component {
         newNodes.forEach((val, ind) => { newNodeToInd[val] = ind; });
         const newLinks = [];
         this.allData.links.forEach((link) => {
-          const sourceName = link.source.id;
-          const targetName = link.target.id;
+          const sourceName = link.source.hasOwnProperty('id') ? link.source.id : this.allNodes[link.source];
+          const targetName = link.target.hasOwnProperty('id') ? link.target.id : this.allNodes[link.target];
           if (relevantNodes.has(sourceName) && relevantNodes.has(targetName)) {
             newLinks.push({
               source: newNodeToInd[sourceName],
@@ -227,6 +282,8 @@ class GraphWindow extends Component {
           graph: {},
           multigraph: false
         };
+      } else if (AIRCRAFT_SKELETON_NODES.has(focusNode)) {
+        return;
       } else {  // invalid name
         window.alert('invalid node name');
         return;
@@ -239,22 +296,22 @@ class GraphWindow extends Component {
     return (
       <div>
         <div className="nav-buttons">
-          <Button variant="raised" color="secondary" onClick={ this.props.onHomeClicked.bind(this) }>Back to Home</Button>
+          <Button variant="raised" color="primary" onClick={ this.props.onHomeClicked.bind(this) }>Back to Home</Button>
           &nbsp;
-          <Button variant="raised" color="secondary" onClick={ this.resetGraphClicked.bind(this) }>Reset Graph</Button>
+          <Button variant="raised" color="primary" onClick={ this.resetGraphClicked.bind(this) }>Reset Graph</Button>
         </div>
         <div className="option-buttons">
           <Button
               variant={ this.state.nodeAction === 'focus' ? "flat" : "raised" }
               disabled={ this.state.nodeAction === 'focus' }
-              color="secondary"
+              color="primary"
               onClick={ () => this.nodeActionChanged('focus') }>
             Focus on Node
           </Button>
           <Button
               variant={ this.state.nodeAction === 'remove' ? "flat" : "raised" }
               disabled={ this.state.nodeAction === 'remove' }
-              color="secondary"
+              color="primary"
               onClick={ () => this.nodeActionChanged('remove') }>
             Remove Node
           </Button>
@@ -289,7 +346,7 @@ class GraphWindow extends Component {
       <div className="search-bar">
         <IntegrationReactSelect
           onSelect={ this.actOnNode.bind(this) }
-          options={ this.allNodes }/>
+          options={ this.allNodesAsSuggestions }/>
       </div>
     );
   }

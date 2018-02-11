@@ -22,7 +22,8 @@ class Graph extends Component {
   // onFocusNodeChange (callback, takes new name as argument)
 
   _getColorForNode(nodeName) {
-    const nodeType = nodeName.substring(0, nodeName.indexOf('_'));
+    const underscoreInd = nodeName.indexOf('_') === -1 ? nodeName.length : nodeName.indexOf('_');
+    const nodeType = nodeName.substring(0, underscoreInd);
     if (this.props.removedNodes.has(nodeName)) {
       return GRAY;
     }
@@ -149,7 +150,7 @@ class Graph extends Component {
         .text(function(d) { return d.source.id + " → " + d.target.id + format('Volume', d.value); });
 
     node.append("title")
-        .text(function(d) { return d.id + format('Input Volume', d.value) + 
+        .text(function(d) { return d.id + format('Input Volume', d.value) +
                               format('Cost', this.props.nodeCosts[d.id]) +
                               format('Time', this.props.nodeTimes[d.id]); }.bind(this));
 
@@ -158,6 +159,7 @@ class Graph extends Component {
   }
 
   render() {
+    console.log(this.props.data)
     return this.drawChart();
   }
 }
