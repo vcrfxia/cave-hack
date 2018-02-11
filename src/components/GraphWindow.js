@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Button from 'material-ui/Button';
 
 import Graph from './Graph';
 
@@ -133,8 +134,11 @@ class GraphWindow extends Component {
   render() {
     return (
       <div>
-        <button onClick={ this.props.onHomeClicked.bind(this) }>Back to Home</button>
-        <button onClick={ () => this.updateFocusNode('') }>Reset Graph</button>
+        <div className="nav-buttons">
+          <Button variant="raised" color="secondary" onClick={ this.props.onHomeClicked.bind(this) }>Back to Home</Button>
+          &nbsp;
+          <Button variant="raised" color="secondary" onClick={ () => this.updateFocusNode('') }>Reset Graph</Button>
+        </div>
         <Graph
           width={ this.props.width }
           height={ this.props.height }

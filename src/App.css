@@ -1,25 +1,37 @@
-.App {
-  text-align: center;
-}
-
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
   height: 80px;
 }
 
 .App-header {
-  background-color: #222;
+  background-color: #7986cb;
   height: 150px;
   padding: 20px;
   color: white;
+  text-align: center;
 }
 
 .App-title {
   font-size: 1.5em;
 }
 
-.App-intro {
+.select-dataset {
+  padding: 20px;
   font-size: large;
+  text-align: center;
+}
+
+.select-dataset-buttons {
+  display: flex;
+  padding: 20px;
+}
+
+.select-dataset-button {
+  flex-grow: 1;
+}
+
+.nav-buttons {
+  padding: 10px;
 }
 
 @keyframes App-logo-spin {
