@@ -3,13 +3,16 @@ import Button from 'material-ui/Button';
 
 import Graph from './Graph';
 
+const WIDTH_OPTIONS = ['time', 'cost']
+
 class GraphWindow extends Component {
   constructor(props) {   // width, height, dataName (string: cereal/perfume/aircraft), onHomeClicked
     super(props);
     this.state = {
       focusNode: '',   // name of node to focus graph on; empty if none,
       nodeAction: 'focus',
-      removedNodes: new Set()
+      removedNodes: new Set(),
+      widthDisplay: 'time'
     };
     // contains nodes (array of names), links (array of objects (source: name, target: name, value: double))
     this.allData = {};
@@ -50,6 +53,18 @@ class GraphWindow extends Component {
     return this.allNodesSet.has(name);
   }
 
+  _getNodeWidths() {
+    switch (this.state.widthDisplay) {
+      case 'time':
+        return this.nodeTimes;
+      case 'cost':
+        return this.nodeCosts;
+      default:
+        console.log('invalid width display.');
+    }
+    return null;
+  }
+
   // returns object mapping nodeName to demand at that node
   // flows will be set to the demand at their destination
   _computeDemands(nodeSet) {
@@ -74,8 +89,12 @@ class GraphWindow extends Component {
     return demands;
   }
 
-  updateNodeAction(newAction) {
+  nodeActionChanged(newAction) {
     this.setState({ nodeAction: newAction });
+  }
+
+  widthDisplayChanged(e) {
+    this.setState({ widthDisplay: e.target.value });
   }
 
   resetGraphClicked() {
@@ -204,7 +223,7 @@ class GraphWindow extends Component {
     }
   }
 
-  render() {
+  renderTopBarButtons() {
     return (
       <div>
         <div className="nav-buttons">
@@ -217,23 +236,56 @@ class GraphWindow extends Component {
               variant={ this.state.nodeAction === 'focus' ? "flat" : "raised" }
               disabled={ this.state.nodeAction === 'focus' }
               color="secondary"
-              onClick={ () => this.updateNodeAction('focus') }>
+              onClick={ () => this.nodeActionChanged('focus') }>
             Focus on Node
           </Button>
           <Button
               variant={ this.state.nodeAction === 'remove' ? "flat" : "raised" }
               disabled={ this.state.nodeAction === 'remove' }
               color="secondary"
-              onClick={ () => this.updateNodeAction('remove') }>
+              onClick={ () => this.nodeActionChanged('remove') }>
             Remove Node
           </Button>
         </div>
+      </div>
+    );
+  }
+
+  renderDisplayOptions() {
+    return (
+      <div>
+        <div>
+          Node width represents:
+          { WIDTH_OPTIONS.map(
+            (option, ind) => {
+              return (
+                <div key={ ind }>
+                  <input
+                    type="radio"
+                    value={ option }
+                    checked={ this.state.widthDisplay === option }
+                    onChange={ this.widthDisplayChanged.bind(this) }
+                  />{ option } &nbsp;
+                </div>
+              )
+            }
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  render() {
+    return (
+      <div>
+        { this.renderTopBarButtons() }
+        { this.renderDisplayOptions() }
         <Graph
           width={ this.props.width }
           height={ this.props.height }
           data={ this.data }
           focusNode={ this.state.focusNode }
-          nodeWidths={ this.nodeTimes }
+          nodeWidths={ this._getNodeWidths() }
           nodeCosts={ this.nodeCosts }
           nodeTimes={ this.nodeTimes }
           removedNodes={ this.state.removedNodes }

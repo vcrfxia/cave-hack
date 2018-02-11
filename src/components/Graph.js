@@ -51,7 +51,10 @@ class Graph extends Component {
     const offset = this._getFlowOffset(node);
 
     // adjust width of trapezoid based on cost
-    node.x1 = node.x0 + (node.x1 - node.x0) * MAX_WIDTH_SCALE * (this.props.nodeWidths[node.id] / maxWidth);
+    const adjustedWidth = (this.props.nodeWidths[node.id] < 0.0001
+                            ? 1
+                            : (node.x1 - node.x0) * MAX_WIDTH_SCALE * (this.props.nodeWidths[node.id] / maxWidth));
+    node.x1 = node.x0 + Math.ceil(adjustedWidth);
 
     const vertices = [];
     vertices.push(String(node.x0) + ',' + String(node.y0));   // upper left
